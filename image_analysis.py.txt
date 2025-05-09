@@ -1,0 +1,77 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.utils import to_categorical
+
+# Define the CNN model
+cnn_model = models.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Flatten(),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile the model
+cnn_model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+
+# Train the CNN model
+cnn_history = cnn_model.fit(train_images, train_labels_one_hot,
+                            epochs=10, validation_split=0.2)
+
+# Evaluate the CNN model on the test set
+cnn_loss, cnn_accuracy = cnn_model.evaluate(test_images, test_labels_one_hot, verbose=0)
+print(f"CNN Test Accuracy: {cnn_accuracy:.4f}")
+
+
+# Logistic Regression
+logistic_model = LogisticRegression(solver='liblinear', multi_class='ovr', random_state=42)
+logistic_model.fit(X_train_scaled, y_train_ml)
+logistic_predictions = logistic_model.predict(X_test_scaled)
+print("Logistic Regression Results:")
+print(classification_report(test_labels.flatten(), logistic_predictions))
+print(confusion_matrix(test_labels.flatten(), logistic_predictions))
+print("-" * 30)
+
+# Support Vector Machine (SVM) - This might take some time to train
+svm_model = SVC(kernel='rbf', random_state=42)
+svm_model.fit(X_train_scaled, y_train_ml)
+svm_predictions = svm_model.predict(X_test_scaled)
+print("Support Vector Machine Results:")
+print(classification_report(test_labels.flatten(), svm_predictions))
+print(confusion_matrix(test_labels.flatten(), svm_predictions))
+
+
+# Plot training history of the CNN
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 2, 1)
+plt.plot(cnn_history.history['accuracy'], label='train_accuracy')
+plt.plot(cnn_history.history['val_accuracy'], label='val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.title('CNN Training Accuracy')
+
+plt.subplot(1, 2, 2)
+plt.plot(cnn_history.history['loss'], label='train_loss')
+plt.plot(cnn_history.history['val_loss'], label='val_loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.title('CNN Training Loss')
+plt.show()
+
+print(f"\nCNN Test Accuracy: {cnn_accuracy:.4f}")
+
+# You can further analyze the classification reports and confusion matrices
+# for the traditional ML models to compare their performance with the CNN.
